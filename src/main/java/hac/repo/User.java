@@ -1,10 +1,9 @@
 package hac.repo;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.UniqueElements;
+
 import java.io.Serializable;
 
 @Entity
@@ -15,6 +14,7 @@ public class User implements Serializable {
     private long id;
 
     @NotEmpty(message = "Name is mandatory")
+    @Column(unique = true)
     private String userName;
 
     @NotEmpty(message = "Email is mandatory")
