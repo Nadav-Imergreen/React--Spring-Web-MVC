@@ -12,14 +12,19 @@
         <div class="form-group">
             <label for="username">Username:</label>
             <input type="text" class="form-control" id="username" placeholder="username" th:field="*{userName}" required/>
+            <span th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
             <input type="email" class="form-control" id="email" name="email" placeholder="example@gmail.com" th:field="*{email}" required/>
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
+
         </div>
         <div class="form-group">
             <label for="password">Password:</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="at-least 1 digit" th:field="*{password}" required/>
+            <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></span>
+
         </div>
         <button id="registerButton" type="submit" class="btn btn-primary">Register</button>
     </form>
