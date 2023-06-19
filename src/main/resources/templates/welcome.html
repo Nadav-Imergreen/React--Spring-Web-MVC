@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<div th:replace="navbar.html">  </div>
 <div class="container">
   <div class="jumbotron text-center">
     <h1>Welcome to Your Website</h1>
@@ -18,7 +19,8 @@
         <div class="card-body">
           <h5 class="card-title">User Login</h5>
           <p class="card-text">Login as a regular user.</p>
-          <a th:href="@{/userLogin}" class="btn btn-primary">User Login</a>
+          <a th:href="@{user/login}" class="btn btn-primary">User Login</a>
+          <a th:href="@{user/register}" class="btn btn-primary">User register</a>
         </div>
       </div>
     </div>
@@ -27,7 +29,7 @@
         <div class="card-body">
           <h5 class="card-title">Admin Login</h5>
           <p class="card-text">Login as an administrator.</p>
-          <a th:href="@{/adminLogin}" class="btn btn-primary">Admin Login</a>
+          <a th:href="@{admin/login}" class="btn btn-primary">Admin Login</a>
         </div>
       </div>
     </div>
@@ -35,4 +37,3 @@
 </div>
 </body>
 </html>
-l>

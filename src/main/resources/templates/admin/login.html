@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<div th:replace="navbar.html">  </div>
 <div class="d-flex align-items-center justify-content-center">
   <img src="/images/0.png" class="mx-auto d-block" alt="Company logo">
 </div>
@@ -14,14 +15,14 @@
     <div class="text-center">
       <h2>Please Sign in</h2>
     </div>
-    <form id="loginForm" th:action="@{/loginAdmin}" th:object="${user}" method="post">
+    <form id="loginForm" th:action="@{/admin/login}" th:object="${user}" method="post">
       <div class="form-floating">
         <div class="input-group">
           <span class="input-group-text">
             <i class="bi bi-envelope-at"></i>
           </span>
-          <input type="text" class="form-control" id="userName" th:field="*{userName}" placeholder="userName" required>
-          <span th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}" class="text-danger"></span>
+          <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="email" required>
+          <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
         </div>
       </div>
       <div class="form-floating">

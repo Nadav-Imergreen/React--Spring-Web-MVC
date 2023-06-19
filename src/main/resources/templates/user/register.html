@@ -6,9 +6,10 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<div th:replace="navbar.html">  </div>
 <div class="container">
     <h1>User Registration</h1>
-    <form id="registrationForm" th:action="@{/addUser}" th:object="${user}" method="post">
+    <form id="registrationForm" th:action="@{/user/register}" th:object="${user}" method="post">
         <div class="form-group">
             <label for="username">Username:</label>
             <input type="text" class="form-control" id="username" placeholder="username" th:field="*{userName}"/>
@@ -29,7 +30,7 @@
         <button id="registerButton" type="submit" class="btn btn-primary">Register</button>
     </form>
     <div class="text-center">
-        <p>already registered? go to <a href="/">login</a> page</p>
+        <p>already registered? go to <a href="/user/login">login</a> page</p>
     </div>
 </div>
 </body>

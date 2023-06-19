@@ -14,11 +14,11 @@ public class User implements Serializable {
     private long id;
 
     @NotEmpty(message = "Name is mandatory")
-    @Column(unique = true)
     private String userName;
 
     @NotEmpty(message = "Email is mandatory")
     @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
 
     @NotEmpty(message = "Password is mandatory")

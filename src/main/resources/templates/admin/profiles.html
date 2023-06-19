@@ -2,23 +2,36 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile</title>
+    <title>User Profiles</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<div th:replace="navbar.html">  </div>
 <div class="container">
-    <h2>User Profile</h2>
+    <h2>User Profiles</h2>
     <table class="table table-bordered">
         <thead>
         <tr>
+            <th>Id</th>
             <th>Username</th>
             <th>Email</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
             <td th:text="${user.userName}"></td>
             <td th:text="${user.email}"></td>
+            <td>
+                <form th:action="@{/admin/profiles/update/{id}/{newName}(id=${user.id}, newName=${'newUsername'})}" method="post">
+                    <label><input type="text" name="newUsername" class="form-control mr-2" placeholder="update username"></label>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+                <form th:action="@{/admin/profiles/delete/{id}(id=${user.id})}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
