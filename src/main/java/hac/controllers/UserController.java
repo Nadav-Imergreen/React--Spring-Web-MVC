@@ -2,6 +2,7 @@ package hac.controllers;
 
 import hac.repo.User;
 import hac.repo.UserRepository;
+import hac.repo.UserSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,6 +21,9 @@ public class UserController {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private UserSession userSession;
+
     @GetMapping("/login")
     public String userLogin(Model model) {
         model.addAttribute("user", new User());
@@ -32,11 +36,24 @@ public class UserController {
         return "user/register";
     }
 
+    @GetMapping("/profiles")
+    public String showProfiles(Model model) {
+
+        if (userSession == null || !userSession.isAuthenticated()) {
+            return "redirect:/user/login";
+        }
+
+        List<User> users = repository.findAll();
+        model.addAttribute("users", users);
+        return "user/profiles";
+    }
+
     @PostMapping("/register")
     public String addUser(@Valid User user, BindingResult result, Model model) {
+
         if (result.hasErrors()) {
             model.addAttribute("user", user);
-            return "user/register";
+            return "/user/register";
         }
 
         try {
@@ -44,40 +61,35 @@ public class UserController {
         } catch (DataIntegrityViolationException e) { // Handle duplicate userName
             result.rejectValue("email", "error.email", "email already exists");
             model.addAttribute("user", user);
-            return "user/register";
+            return "/user/register";
         }
 
-        return "user/login";
+        return "redirect:/user/login";
     }
 
     @PostMapping("/login")
     public String loginUser(@ModelAttribute("user") User user, BindingResult result, Model model) {
+
         if (result.hasErrors()) {
-            model.addAttribute("loginError", result.getAllErrors());
-            return "user/login";
+            model.addAttribute("loginError", "error");
+            return "/user/login";
         }
 
         User existingUser = repository.findByEmail(user.getEmail());
         if (existingUser == null) {
             result.rejectValue("email", "error.email", "user not found");
             model.addAttribute("user", user);
-            return "user/login";
+            return "/user/login";
         }
         if (!user.getPassword().equals(existingUser.getPassword())) {
             result.rejectValue("password", "error.password", "wrong password");
             model.addAttribute("user", user);
-            return "user/login";
+            return "/user/login";
         }
 
         List<User> users = repository.findAll();
         model.addAttribute("users", users);
-        return "user/profiles";
-    }
-
-    @GetMapping("/profiles")
-    public String showProfiles(Model model) {
-        List<User> users = repository.findAll();
-        model.addAttribute("users", users);
-        return "user/profiles";
+        userSession.setLogin();
+        return "redirect:/user/profiles";
     }
 }

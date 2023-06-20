@@ -1,9 +1,7 @@
 package hac.repo;
+
 import jakarta.persistence.*;
-
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.UniqueElements;
-
 import java.io.Serializable;
 
 @Entity

@@ -24,6 +24,17 @@
             <td th:text="${user.userName}"></td>
             <td th:text="${user.email}"></td>
             <td>
+<!--                <form id="update" th:action="@{/admin/profiles/update}" th:object="${user}" method="post">-->
+<!--                    <label for="userName"></label>-->
+<!--                    <input type="text" class="form-control" id="userName" th:field="*{userName}" placeholder="update username" required>-->
+<!--                    <input type="hidden" name="newName" th:attr="value=${user.userName}">-->
+<!--                    <div class="row mx-auto">-->
+<!--                        <button class="btn btn-primary w-100" type="submit">Update</button>-->
+<!--                    </div>-->
+<!--                </form>-->
+
+
+
                 <form th:action="@{/admin/profiles/update/{id}/{newName}(id=${user.id}, newName=${'newUsername'})}" method="post">
                     <label><input type="text" name="newUsername" class="form-control mr-2" placeholder="update username"></label>
                     <button type="submit" class="btn btn-primary">Update</button>

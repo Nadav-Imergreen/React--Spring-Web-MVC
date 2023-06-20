@@ -38,9 +38,7 @@
       <div class="row mx-auto">
         <button class="btn btn-primary w-100" id='signIn' type="submit">Sign in</button>
       </div>
-      <div>
-        <p th:if="${loginError}" th:text="${loginError}" class="alert alert-danger text-center" role="alert"></p>
-      </div>
+      <span th:if="${loginError}" th:action="@{/error-page}" method="get"></span>
     </form>
     <br>
   </div>
