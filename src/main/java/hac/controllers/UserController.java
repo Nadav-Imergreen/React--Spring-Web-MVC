@@ -2,6 +2,7 @@ package hac.controllers;
 
 import hac.repo.*;
 import jakarta.validation.Valid;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
@@ -68,7 +69,7 @@ public class UserController {
         }
 
         try {
-            userRepository.save(user);
+            userRepository.save(new User(user.getUserName(), user.getEmail(), user.getPassword()));
         } catch (DataIntegrityViolationException e) { // Handle duplicate userName
             result.rejectValue("email", "error.email", "email already exists");
             model.addAttribute("user", user);
@@ -93,7 +94,7 @@ public class UserController {
             return "/user/login";
         }
 
-        if (!user.getPassword().equals(existingUser.getPassword())) {
+        if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) {
             result.rejectValue("password", "error.password", "wrong password");
             model.addAttribute("user", user);
             return "/user/login";
@@ -117,14 +118,15 @@ public class UserController {
         User user = userSession.getUser();
 
         // Validate the old password
-        if (!oldPassword.equals( user.getPassword())) {
+
+        if (!BCrypt.checkpw(oldPassword, user.getPassword())) {
             //model.addAttribute("error", "Incorrect old password");
             System.out.println("wronggggggg");
             return "redirect:/user/profile";
         }
 
         // Update the user's password
-        user.setPassword((newPassword));
+        user.setPassword((BCrypt.hashpw(newPassword, BCrypt.gensalt())));
         userRepository.save(user);
 
         // Redirect to a success page or display a success message

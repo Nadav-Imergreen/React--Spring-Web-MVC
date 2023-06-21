@@ -3,6 +3,7 @@ package hac.repo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import org.mindrot.jbcrypt.BCrypt;
 
 @Entity
 public class User implements Serializable {
@@ -27,7 +28,7 @@ public class User implements Serializable {
     public User(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public void setId(long id) {

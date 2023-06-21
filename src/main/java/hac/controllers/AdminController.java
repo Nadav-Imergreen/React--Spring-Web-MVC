@@ -1,6 +1,7 @@
 package hac.controllers;
 
 import hac.repo.*;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
@@ -64,7 +65,9 @@ public class AdminController {
             return "user/login";
         }
 
-        if (!(user.getPassword().equals(ADMIN_PASSWORD) && user.getEmail().equals(ADMIN_EMAIL))) {
+        User admin = userRepository.findByEmail(ADMIN_EMAIL);
+
+        if (!BCrypt.checkpw(user.getPassword(), admin.getPassword()) && user.getEmail().equals(ADMIN_EMAIL)) {
             result.rejectValue("password", "error.password", "wrong password or userName");
             model.addAttribute("user", user);
             return "admin/login";
@@ -78,16 +81,6 @@ public class AdminController {
         return "redirect:/admin/profiles";
     }
 
-//    @PostMapping("/profiles/update/{id}/{newName}")
-//    public String updateProfile(@PathVariable("id") Long id, @PathVariable("newName") String newName, Model model) {
-//        User user = repository.findById(id).orElse(null);
-//        if (user != null) {
-//            user.setUserName(newName);
-//            repository.save(user);
-//        }
-//        return showProfiles(model);
-//    }
-
     @PostMapping("/profiles/update")
     public String updateProfile(@ModelAttribute("user") User user, @RequestParam("newName") String newName, Model model) {
         user = userRepository.findById(user.getId()).orElse(null);
@@ -99,16 +92,6 @@ public class AdminController {
         }
         return "redirect:/admin/profiles";
     }
-
-//    @PostMapping("/profiles/update/{id}")
-//    public String updateProfile(@PathVariable("id") Long id, @RequestParam("newName") String newName) {
-//        User user = repository.findById(id).orElse(null);
-//        if (user != null) {
-//            user.setUserName(newName);
-//            repository.save(user);
-//        }
-//        return "redirect:/admin/profiles";
-//    }
 
     @PostMapping("/profiles/delete/{id}")
     public String deleteProfile(@PathVariable("id") Long id,  Model model) {
