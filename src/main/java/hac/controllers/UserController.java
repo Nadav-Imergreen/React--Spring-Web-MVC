@@ -46,8 +46,6 @@ public class UserController {
 
         User user = userSession.getUser();
 
-        System.out.println(user);
-
         List<Visit> lastVisits = visitRepository.findLatestByEmail(user.getEmail());
 
         if (lastVisits.size() > 1)
@@ -117,19 +115,22 @@ public class UserController {
         // Retrieve the currently logged-in user
         User user = userSession.getUser();
 
-        // Validate the old password
-
-        if (!BCrypt.checkpw(oldPassword, user.getPassword())) {
-            //model.addAttribute("error", "Incorrect old password");
-            System.out.println("wronggggggg");
-            return "redirect:/user/profile";
+        if (BCrypt.checkpw(oldPassword, user.getPassword())){  // Validate the old password
+            model.addAttribute("success", "password change secssesfuly");
+            user.setPassword((BCrypt.hashpw(newPassword, BCrypt.gensalt())));  // Update the user's password
+            userRepository.save(user);
         }
+        else
+            model.addAttribute("error", "wrong password");
 
-        // Update the user's password
-        user.setPassword((BCrypt.hashpw(newPassword, BCrypt.gensalt())));
-        userRepository.save(user);
+        List<Visit> lastVisits = visitRepository.findLatestByEmail(user.getEmail());
 
-        // Redirect to a success page or display a success message
-        return "redirect:/user/profile";
+        if (lastVisits.size() > 1)
+            model.addAttribute("lastVisit", lastVisits.get(0).getLastVisit());
+        else
+            model.addAttribute("lastVisit", "first visit");
+
+        model.addAttribute("user", user);
+        return "/user/profile";
     }
 }

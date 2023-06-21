@@ -6,35 +6,43 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<div th:replace="navbar.html">  </div>
+<div th:replace="navbar.html"></div>
 <div class="container">
     <h2>User Profile</h2>
-    <div>
-        <p>Last Visit Time: <span th:text="${lastVisit}"></span></p>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Last Visit Time:</h5>
+            <p class="card-text" th:text="${lastVisit}"></p>
+        </div>
     </div>
 
-    <div>
-        <h3>User Details:</h3>
-        <p>ID: <span th:text="${user.id}"></span></p>
-        <p>Username: <span th:text="${user.userName}"></span></p>
-        <p>Email: <span th:text="${user.email}"></span></p>
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">User Details:</h5>
+            <p class="card-text">ID: <span th:text="${user.id}"></span></p>
+            <p class="card-text">Username: <span th:text="${user.userName}"></span></p>
+            <p class="card-text">Email: <span th:text="${user.email}"></span></p>
+        </div>
     </div>
 
-    <div>
-        <h3>Change Password:</h3>
-        <form th:action="@{/user/changePassword}" method="post">
-            <div>
-                <label for="oldPassword">Old Password:</label>
-                <input type="password" id="oldPassword" name="oldPassword" required>
-            </div>
-            <div>
-                <label for="newPassword">New Password:</label>
-                <input type="password" id="newPassword" name="newPassword" required>
-            </div>
-            <div>
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Change Password:</h5>
+            <form th:action="@{/user/changePassword}" method="post">
+                <div class="form-group">
+                    <label for="oldPassword">Old Password:</label>
+                    <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+                    <span th:text="${error}" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password:</label>
+                    <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                </div>
                 <button type="submit" class="btn btn-primary">Change Password</button>
-            </div>
-        </form>
+                <span th:text="${success}" class="text-success"></span>
+            </form>
+        </div>
     </div>
 </div>
 </body>
