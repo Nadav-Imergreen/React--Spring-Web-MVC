@@ -1,14 +1,15 @@
 package hac.controllers;
 
-import hac.repo.User;
-import hac.repo.UserRepository;
-import hac.repo.UserSession;
+import hac.repo.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private VisitRepository visitRepository;
 
     @Autowired
     private UserSession userSession;
@@ -37,11 +41,21 @@ public class UserController {
     }
 
     @GetMapping("/profiles")
-    public String showProfiles(Model model) {
+    public String showProfiles(User user, Model model) {
 
-        if (userSession == null || !userSession.isAuthenticated()) {
+        if (userSession == null || !userSession.isAuthenticated())
             return "redirect:/user/login";
-        }
+
+
+        List<Visit> lastVisits = visitRepository.findLatestByEmail(user.getEmail());
+
+        if (lastVisits.size() > 1) {
+            Visit latestVisit = lastVisits.get(0);
+            System.out.println("lastVisit: " + latestVisit.getLastVisit());
+            model.addAttribute("lastVisit", latestVisit.getLastVisit());
+        } else
+            model.addAttribute("lastVisit", "first visit");
+
 
         List<User> users = repository.findAll();
         model.addAttribute("users", users);
@@ -81,15 +95,19 @@ public class UserController {
             model.addAttribute("user", user);
             return "/user/login";
         }
+
         if (!user.getPassword().equals(existingUser.getPassword())) {
             result.rejectValue("password", "error.password", "wrong password");
             model.addAttribute("user", user);
             return "/user/login";
         }
 
-        List<User> users = repository.findAll();
-        model.addAttribute("users", users);
         userSession.setLogin();
-        return "redirect:/user/profiles";
+
+        LocalDateTime currentDate = LocalDateTime.now();
+        Visit visit = new Visit(user.getEmail(), currentDate);
+        visitRepository.save(visit);
+
+        return showProfiles(user, model);
     }
 }

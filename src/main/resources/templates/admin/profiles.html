@@ -6,46 +6,53 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<div th:replace="navbar.html">  </div>
+<div th:replace="navbar.html"></div>
 <div class="container">
     <h2>User Profiles</h2>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.id}"></td>
-            <td th:text="${user.userName}"></td>
-            <td th:text="${user.email}"></td>
-            <td>
-<!--                <form id="update" th:action="@{/admin/profiles/update}" th:object="${user}" method="post">-->
-<!--                    <label for="userName"></label>-->
-<!--                    <input type="text" class="form-control" id="userName" th:field="*{userName}" placeholder="update username" required>-->
-<!--                    <input type="hidden" name="newName" th:attr="value=${user.userName}">-->
-<!--                    <div class="row mx-auto">-->
-<!--                        <button class="btn btn-primary w-100" type="submit">Update</button>-->
-<!--                    </div>-->
-<!--                </form>-->
-
-
-
-                <form th:action="@{/admin/profiles/update/{id}/{newName}(id=${user.id}, newName=${'newUsername'})}" method="post">
-                    <label><input type="text" name="newUsername" class="form-control mr-2" placeholder="update username"></label>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </form>
-                <form th:action="@{/admin/profiles/delete/{id}(id=${user.id})}" method="post">
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}"></td>
+                    <td th:text="${user.userName}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td>
+                        <form th:action="@{/admin/profiles/delete/{id}(id=${user.id})}" method="post">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Email</th>
+                    <th>Last Visit</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="visit : ${visits}">
+                    <td th:text="${visit.id}"></td>
+                    <td th:text="${visit.email}"></td>
+                    <td th:text="${visit.lastVisit}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 </body>
 </html>

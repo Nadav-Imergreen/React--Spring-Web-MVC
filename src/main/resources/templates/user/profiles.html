@@ -9,20 +9,28 @@
 <div th:replace="navbar.html">  </div>
 <div class="container">
     <h2>User Profile</h2>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Username</th>
-            <th>Email</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.userName}"></td>
-            <td th:text="${user.email}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <div>
+        <p>Last Visit Time: <span th:text="${lastVisit}"></span></p>
+    </div>
 </div>
 </body>
 </html>
+
+
+
+<!--    <table class="table table-bordered">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>id</th>-->
+<!--            <th>Username</th>-->
+<!--            <th>Email</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="user : ${users}">-->
+<!--            <td th:text="${user.id}"></td>-->
+<!--            <td th:text="${user.userName}"></td>-->
+<!--            <td th:text="${user.email}"></td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->

@@ -1,8 +1,6 @@
 package hac.controllers;
 
-import hac.repo.User;
-import hac.repo.UserRepository;
-import hac.repo.UserSession;
+import hac.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
@@ -10,7 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Scanner;
 
 @Controller
 @RequestMapping("/admin")
@@ -22,7 +23,8 @@ public class AdminController {
 
     @Autowired
     private UserRepository repository;
-
+    @Autowired
+    private VisitRepository visitRepository;
     @Autowired
     private UserSession userSession;
 
@@ -47,6 +49,10 @@ public class AdminController {
 
         List<User> users = repository.findAll();
         model.addAttribute("users", users);
+
+        List<Visit> visits = visitRepository.findAll();
+        model.addAttribute("visits", visits);
+
         return "admin/profiles";
     }
 
@@ -64,8 +70,10 @@ public class AdminController {
             return "admin/login";
         }
 
-        List<User> users = repository.findAll();
-        model.addAttribute("users", users);
+        LocalDateTime currentDate = LocalDateTime.now();
+        Visit visit = new Visit(user.getEmail(), currentDate);
+        visitRepository.save(visit);
+
         userSession.setLogin();
         return "redirect:/admin/profiles";
     }
@@ -85,11 +93,22 @@ public class AdminController {
         user = repository.findById(user.getId()).orElse(null);
         System.out.println("newName issssssssssssß: " + newName);
         if (user != null) {
-            user.setUserName(newName);
+            System.out.println("get username issssssssssssß: " + user.getUserName());
+            user.setUserName(user.getUserName());
             repository.save(user);
         }
         return "redirect:/admin/profiles";
     }
+
+//    @PostMapping("/profiles/update/{id}")
+//    public String updateProfile(@PathVariable("id") Long id, @RequestParam("newName") String newName) {
+//        User user = repository.findById(id).orElse(null);
+//        if (user != null) {
+//            user.setUserName(newName);
+//            repository.save(user);
+//        }
+//        return "redirect:/admin/profiles";
+//    }
 
     @PostMapping("/profiles/delete/{id}")
     public String deleteProfile(@PathVariable("id") Long id,  Model model) {
