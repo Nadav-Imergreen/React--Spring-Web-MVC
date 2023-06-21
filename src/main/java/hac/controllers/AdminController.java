@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Scanner;
 
 @Controller
 @RequestMapping("/admin")
@@ -22,7 +21,7 @@ public class AdminController {
     private static final String ADMIN_PASSWORD = "1234";
 
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
     @Autowired
     private VisitRepository visitRepository;
     @Autowired
@@ -30,8 +29,8 @@ public class AdminController {
 
     @EventListener
     public void registerAdmin(ApplicationEvent event) {
-        if (repository.findByEmail(ADMIN_EMAIL) == null)
-            repository.save(new User(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD));
+        if (userRepository.findByEmail(ADMIN_EMAIL) == null)
+            userRepository.save(new User(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD));
     }
 
     @GetMapping("/login")
@@ -47,7 +46,8 @@ public class AdminController {
             return "redirect:/admin/login";
         }
 
-        List<User> users = repository.findAll();
+        List<User> users = userRepository.findAll();
+
         model.addAttribute("users", users);
 
         List<Visit> visits = visitRepository.findAll();
@@ -74,7 +74,7 @@ public class AdminController {
         Visit visit = new Visit(user.getEmail(), currentDate);
         visitRepository.save(visit);
 
-        userSession.setLogin();
+        userSession.setLogin(user);
         return "redirect:/admin/profiles";
     }
 
@@ -90,12 +90,12 @@ public class AdminController {
 
     @PostMapping("/profiles/update")
     public String updateProfile(@ModelAttribute("user") User user, @RequestParam("newName") String newName, Model model) {
-        user = repository.findById(user.getId()).orElse(null);
+        user = userRepository.findById(user.getId()).orElse(null);
         System.out.println("newName issssssssssssß: " + newName);
         if (user != null) {
             System.out.println("get username issssssssssssß: " + user.getUserName());
             user.setUserName(user.getUserName());
-            repository.save(user);
+            userRepository.save(user);
         }
         return "redirect:/admin/profiles";
     }
@@ -112,7 +112,7 @@ public class AdminController {
 
     @PostMapping("/profiles/delete/{id}")
     public String deleteProfile(@PathVariable("id") Long id,  Model model) {
-        repository.deleteById(id);
+        userRepository.deleteById(id);
         return "redirect:/admin/profiles";
     }
 }

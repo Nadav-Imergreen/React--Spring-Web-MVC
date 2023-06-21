@@ -9,18 +9,15 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
 
     @Autowired
     private VisitRepository visitRepository;
@@ -40,26 +37,26 @@ public class UserController {
         return "user/register";
     }
 
-    @GetMapping("/profiles")
-    public String showProfiles(User user, Model model) {
+    @GetMapping("/profile")
+    public String showProfiles(Model model) {
 
         if (userSession == null || !userSession.isAuthenticated())
             return "redirect:/user/login";
 
+        User user = userSession.getUser();
+
+        System.out.println(user);
 
         List<Visit> lastVisits = visitRepository.findLatestByEmail(user.getEmail());
 
-        if (lastVisits.size() > 1) {
-            Visit latestVisit = lastVisits.get(0);
-            System.out.println("lastVisit: " + latestVisit.getLastVisit());
-            model.addAttribute("lastVisit", latestVisit.getLastVisit());
-        } else
+        if (lastVisits.size() > 1)
+            model.addAttribute("lastVisit", lastVisits.get(0).getLastVisit());
+        else
             model.addAttribute("lastVisit", "first visit");
 
+        model.addAttribute("user", user);
 
-        List<User> users = repository.findAll();
-        model.addAttribute("users", users);
-        return "user/profiles";
+        return "user/profile";
     }
 
     @PostMapping("/register")
@@ -71,7 +68,7 @@ public class UserController {
         }
 
         try {
-            repository.save(user);
+            userRepository.save(user);
         } catch (DataIntegrityViolationException e) { // Handle duplicate userName
             result.rejectValue("email", "error.email", "email already exists");
             model.addAttribute("user", user);
@@ -89,7 +86,7 @@ public class UserController {
             return "/user/login";
         }
 
-        User existingUser = repository.findByEmail(user.getEmail());
+        User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser == null) {
             result.rejectValue("email", "error.email", "user not found");
             model.addAttribute("user", user);
@@ -102,12 +99,35 @@ public class UserController {
             return "/user/login";
         }
 
-        userSession.setLogin();
+        userSession.setLogin(existingUser);
 
         LocalDateTime currentDate = LocalDateTime.now();
         Visit visit = new Visit(user.getEmail(), currentDate);
         visitRepository.save(visit);
 
-        return showProfiles(user, model);
+        return "redirect:/user/profile";
+    }
+
+    @PostMapping("/changePassword")
+    public String changePassword(@RequestParam("oldPassword") String oldPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 Model model) {
+
+        // Retrieve the currently logged-in user
+        User user = userSession.getUser();
+
+        // Validate the old password
+        if (!oldPassword.equals( user.getPassword())) {
+            //model.addAttribute("error", "Incorrect old password");
+            System.out.println("wronggggggg");
+            return "redirect:/user/profile";
+        }
+
+        // Update the user's password
+        user.setPassword((newPassword));
+        userRepository.save(user);
+
+        // Redirect to a success page or display a success message
+        return "redirect:/user/profile";
     }
 }

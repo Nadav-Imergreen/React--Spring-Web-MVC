@@ -3,21 +3,30 @@ package hac.repo;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
+import hac.repo.User;
+
 @Component
 @SessionScope
 public class UserSession {
 
-    private boolean isConnected;
+    private boolean isAuthenticated;
+    private User user;
 
     public UserSession() {
-        isConnected = false;
+        isAuthenticated = false;
     }
 
-    public void setLogin() {
-        isConnected = true;
+    public void setLogin(User user) {
+        this.user = user;
+        isAuthenticated = true;
     }
 
     public boolean isAuthenticated() {
-        return isConnected;
+        return isAuthenticated;
     }
+
+    public User getUser() {
+        return user;
+    }
+
 }
