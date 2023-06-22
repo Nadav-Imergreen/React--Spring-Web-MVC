@@ -20,6 +20,10 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    private UserRepository getRepo() {
+        return userRepository;
+    }
+
     @Autowired
     private VisitRepository visitRepository;
 
@@ -41,19 +45,11 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfiles(Model model) {
 
-        if (userSession == null || !userSession.isAuthenticated())
-            return "redirect:/user/login";
+//        if (userSession == null || !userSession.isAuthenticated())
+//            return "redirect:/user/login";
 
         User user = userSession.getUser();
-
-        List<Visit> lastVisits = visitRepository.findLatestByEmail(user.getEmail());
-
-        if (lastVisits.size() > 1)
-            model.addAttribute("lastVisit", lastVisits.get(0).getLastVisit());
-        else
-            model.addAttribute("lastVisit", "first visit");
-
-        model.addAttribute("user", user);
+        addUserDetails(model, user);
 
         return "user/profile";
     }
@@ -86,20 +82,23 @@ public class UserController {
         }
 
         User existingUser = userRepository.findByEmail(user.getEmail());
+
+        // check email
         if (existingUser == null) {
             result.rejectValue("email", "error.email", "user not found");
             model.addAttribute("user", user);
             return "/user/login";
         }
-
+        // check password
         if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) {
             result.rejectValue("password", "error.password", "wrong password");
             model.addAttribute("user", user);
             return "/user/login";
         }
-
+        // successful login
         userSession.setLogin(existingUser);
 
+        // save last user login
         LocalDateTime currentDate = LocalDateTime.now();
         Visit visit = new Visit(user.getEmail(), currentDate);
         visitRepository.save(visit);
@@ -115,13 +114,21 @@ public class UserController {
         // Retrieve the currently logged-in user
         User user = userSession.getUser();
 
-        if (BCrypt.checkpw(oldPassword, user.getPassword())){  // Validate the old password
-            model.addAttribute("success", "password change secssesfuly");
+        // Validate old password and generate massage accordingly
+        if (BCrypt.checkpw(oldPassword, user.getPassword())){
+            model.addAttribute("success", "password change successfully");
             user.setPassword((BCrypt.hashpw(newPassword, BCrypt.gensalt())));  // Update the user's password
             userRepository.save(user);
         }
         else
             model.addAttribute("error", "wrong password");
+
+        addUserDetails(model, user);
+
+        return "/user/profile";
+    }
+
+    private void addUserDetails(Model model, User user){
 
         List<Visit> lastVisits = visitRepository.findLatestByEmail(user.getEmail());
 
@@ -131,6 +138,5 @@ public class UserController {
             model.addAttribute("lastVisit", "first visit");
 
         model.addAttribute("user", user);
-        return "/user/profile";
     }
 }

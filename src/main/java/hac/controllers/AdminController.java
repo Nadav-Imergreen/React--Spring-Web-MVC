@@ -3,7 +3,7 @@ package hac.controllers;
 import hac.repo.*;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,8 +28,8 @@ public class AdminController {
     @Autowired
     private UserSession userSession;
 
-    @EventListener
-    public void registerAdmin(ApplicationEvent event) {
+    @EventListener({ApplicationStartedEvent.class})
+    public void registerAdmin() {
         if (userRepository.findByEmail(ADMIN_EMAIL) == null)
             userRepository.save(new User(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD));
     }
@@ -43,9 +43,9 @@ public class AdminController {
     @GetMapping("/profiles")
     public String showProfiles(Model model) {
 
-        if (userSession == null || !userSession.isAuthenticated()) {
-            return "redirect:/admin/login";
-        }
+//        if (userSession == null || !userSession.isAuthenticated()) {
+//            return "redirect:/admin/login";
+//        }
 
         List<User> users = userRepository.findAll();
 
@@ -81,21 +81,12 @@ public class AdminController {
         return "redirect:/admin/profiles";
     }
 
-    @PostMapping("/profiles/update")
-    public String updateProfile(@ModelAttribute("user") User user, @RequestParam("newName") String newName, Model model) {
-        user = userRepository.findById(user.getId()).orElse(null);
-        System.out.println("newName issssssssssssß: " + newName);
-        if (user != null) {
-            System.out.println("get username issssssssssssß: " + user.getUserName());
-            user.setUserName(user.getUserName());
-            userRepository.save(user);
-        }
-        return "redirect:/admin/profiles";
-    }
-
     @PostMapping("/profiles/delete/{id}")
-    public String deleteProfile(@PathVariable("id") Long id,  Model model) {
-        userRepository.deleteById(id);
+    public String deleteProfile(@PathVariable("id") Long id) {
+
+        if(id != 1)  // delete user if it's nut admin
+            userRepository.deleteById(id);
+
         return "redirect:/admin/profiles";
     }
 }

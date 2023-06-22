@@ -11,13 +11,13 @@ public class Visit implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false)
     private long id;
 
     @NotEmpty(message = "Email is mandatory")
     @Email(message = "Email should be valid")
     private String email;
 
-   // @NotEmpty(message = "date is mandatory")
     private LocalDateTime lastVisit;
 
     public Visit() {}

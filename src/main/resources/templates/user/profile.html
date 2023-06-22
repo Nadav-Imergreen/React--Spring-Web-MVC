@@ -8,15 +8,7 @@
 <body>
 <div th:replace="navbar.html"></div>
 <div class="container">
-    <h2>User Profile</h2>
-
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Last Visit Time:</h5>
-            <p class="card-text" th:text="${lastVisit}"></p>
-        </div>
-    </div>
-
+    <h2 class="bold">User Profile</h2>
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">User Details:</h5>
@@ -24,8 +16,11 @@
             <p class="card-text">Username: <span th:text="${user.userName}"></span></p>
             <p class="card-text">Email: <span th:text="${user.email}"></span></p>
         </div>
+        <div class="card-footer">
+            <h5 class="card-title">Last Visit Time:</h5>
+            <p class="card-text" th:text="${lastVisit}"></p>
+        </div>
     </div>
-
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">Change Password:</h5>
