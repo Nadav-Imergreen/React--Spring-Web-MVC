@@ -1,6 +1,6 @@
 package hac;
 
-import hac.controllers.CustomInterceptor;
+import hac.filters.CustomInterceptor;
 import hac.repo.UserSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

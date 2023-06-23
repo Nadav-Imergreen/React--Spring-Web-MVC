@@ -22,7 +22,7 @@
           <span class="input-group-text">
             <i class="bi bi-envelope-at"></i>
           </span>
-          <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="email" required>
+          <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="email">
           <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
         </div>
       </div>
@@ -31,7 +31,7 @@
           <span class="input-group-text">
             <i class="bi bi-key"></i>
           </span>
-          <input type="password" class="form-control" th:field="*{password}" placeholder="Password" required maxlength="32" minlength="3">
+          <input type="password" class="form-control" th:field="*{password}" placeholder="Password">
           <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></span>
         </div>
       </div>

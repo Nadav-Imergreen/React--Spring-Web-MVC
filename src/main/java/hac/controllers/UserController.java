@@ -1,5 +1,7 @@
 package hac.controllers;
 
+import hac.InvalidPasswordException;
+import hac.UserNotFoundException;
 import hac.repo.*;
 import jakarta.validation.Valid;
 import org.mindrot.jbcrypt.BCrypt;
@@ -8,25 +10,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-
-import java.time.LocalDateTime;
 import java.util.List;
-
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserRepository userRepository;
-
-    private UserRepository getRepo() {
-        return userRepository;
-    }
-
-    @Autowired
-    private VisitRepository visitRepository;
-
+    private UserService userService;
     @Autowired
     private UserSession userSession;
 
@@ -44,13 +35,8 @@ public class UserController {
 
     @GetMapping("/profile")
     public String showProfiles(Model model) {
-
-//        if (userSession == null || !userSession.isAuthenticated())
-//            return "redirect:/user/login";
-
         User user = userSession.getUser();
         addUserDetails(model, user);
-
         return "user/profile";
     }
 
@@ -63,7 +49,7 @@ public class UserController {
         }
 
         try {
-            userRepository.save(new User(user.getUserName(), user.getEmail(), user.getPassword()));
+            userService.save(user);
         } catch (DataIntegrityViolationException e) { // Handle duplicate userName
             result.rejectValue("email", "error.email", "email already exists");
             model.addAttribute("user", user);
@@ -76,35 +62,55 @@ public class UserController {
     @PostMapping("/login")
     public String loginUser(@ModelAttribute("user") User user, BindingResult result, Model model) {
 
-        if (result.hasErrors()) {
-            model.addAttribute("loginError", "error");
-            return "/user/login";
-        }
+        User existingUser = userService.findByEmail(user.getEmail());
 
-        User existingUser = userRepository.findByEmail(user.getEmail());
-
-        // check email
         if (existingUser == null) {
-            result.rejectValue("email", "error.email", "user not found");
-            model.addAttribute("user", user);
-            return "/user/login";
+            throw new UserNotFoundException("User not found");
         }
-        // check password
+
         if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) {
-            result.rejectValue("password", "error.password", "wrong password");
-            model.addAttribute("user", user);
-            return "/user/login";
+            throw new InvalidPasswordException("Wrong password");
         }
-        // successful login
+
         userSession.setLogin(existingUser);
 
-        // save last user login
-        LocalDateTime currentDate = LocalDateTime.now();
-        Visit visit = new Visit(user.getEmail(), currentDate);
-        visitRepository.save(visit);
+        userService.createVisit(existingUser);
 
         return "redirect:/user/profile";
     }
+
+    //    @PostMapping("/login")
+//    public String loginUser(@ModelAttribute("user") User user, BindingResult result, Model model) {
+//
+//        if (result.hasErrors()) {
+//            model.addAttribute("loginError", "error");
+//            return "/user/login";
+//        }
+//
+//        User existingUser = userService.findByEmail(user.getEmail());
+//
+//        // check email
+//        if (existingUser == null) {
+//            result.rejectValue("email", "error.email", "user not found");
+//            model.addAttribute("user", user);
+//            return "/user/login";
+//        }
+//        // check password
+//        if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) {
+//            result.rejectValue("password", "error.password", "wrong password");
+//            model.addAttribute("user", user);
+//            return "/user/login";
+//        }
+//        // successful login
+//        userSession.setLogin(existingUser);
+//
+//        // save last user login
+//        userService.createVisit(user);
+//
+//        return "redirect:/user/profile";
+//    }
+
+
 
     @PostMapping("/changePassword")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
@@ -118,7 +124,8 @@ public class UserController {
         if (BCrypt.checkpw(oldPassword, user.getPassword())){
             model.addAttribute("success", "password change successfully");
             user.setPassword((BCrypt.hashpw(newPassword, BCrypt.gensalt())));  // Update the user's password
-            userRepository.save(user);
+            userService.deleteById(user.getId());
+            userService.save(user);
         }
         else
             model.addAttribute("error", "wrong password");
@@ -130,10 +137,10 @@ public class UserController {
 
     private void addUserDetails(Model model, User user){
 
-        List<Visit> lastVisits = visitRepository.findLatestByEmail(user.getEmail());
+        List<Visit> lastVisits = userService.findAllVisitsByEmail(user.getEmail());
 
         if (lastVisits.size() > 1)
-            model.addAttribute("lastVisit", lastVisits.get(0).getLastVisit());
+            model.addAttribute("lastVisit", lastVisits.get(lastVisits.size()-2).getLastVisit());
         else
             model.addAttribute("lastVisit", "first visit");
 

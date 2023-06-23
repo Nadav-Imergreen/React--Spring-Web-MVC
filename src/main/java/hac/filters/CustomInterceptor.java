@@ -1,4 +1,4 @@
-package hac.controllers;
+package hac.filters;
 
 import hac.repo.UserSession;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public class CustomInterceptor implements HandlerInterceptor {
             throws Exception {
 
         if (!userSession.isAuthenticated()){
-            response.sendRedirect("/user/login");  // prevent access to non-authorized pages
+            response.sendRedirect("/");  // prevent access to non-authorized pages
             return false;
         }
         // otherwise grant access

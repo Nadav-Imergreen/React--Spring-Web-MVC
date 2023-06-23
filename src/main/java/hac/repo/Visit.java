@@ -3,7 +3,6 @@ package hac.repo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -18,11 +17,14 @@ public class Visit implements Serializable {
     @Email(message = "Email should be valid")
     private String email;
 
-    private LocalDateTime lastVisit;
+    private Date lastVisit;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Visit() {}
 
-    public Visit(String email, LocalDateTime lastVisit) {
+    public Visit(String email, Date lastVisit) {
         this.email = email;
         this.lastVisit = lastVisit;
     }
@@ -36,9 +38,15 @@ public class Visit implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    public void setLastVisit(LocalDateTime lastVisit) {this.lastVisit = lastVisit;}
+    public void setLastVisit(Date lastVisit) {this.lastVisit = lastVisit;}
     public String getEmail() { return email; }
-    public LocalDateTime getLastVisit() { return lastVisit; }
+    public Date getLastVisit() { return lastVisit; }
+
+    public User getUser() {
+        return user;
+    }public void setUser(User user) {
+        this.user = user;
+    }
 
     @Override
     public String toString() {
