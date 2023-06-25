@@ -18,7 +18,6 @@ public class AdminController {
     @Autowired
     private UserSession userSession;
 
-
     @GetMapping("/login")
     public String adminLogin(Model model) {
         model.addAttribute("user", new User());
@@ -37,17 +36,10 @@ public class AdminController {
         return "admin/profiles";
     }
 
-
-
     @PostMapping("/login")
     public String loginAdmin(@ModelAttribute("user") User user, BindingResult result, Model model) {
 
-        if (result.hasErrors()) {
-            model.addAttribute("loginError", result.getAllErrors());
-            return "user/login";
-        }
-
-        User admin = userService.getAdminDetails();
+        User admin = userService.findByEmail(userService.getAdminEmail());
 
         if (!(BCrypt.checkpw(user.getPassword(), admin.getPassword()) && user.getEmail().equals(admin.getEmail()))){
             result.rejectValue("password", "error.password", "wrong password or userName");
@@ -56,10 +48,10 @@ public class AdminController {
         }
 
         // successful login
-        userSession.setLogin(user);
+        userSession.setLogin(admin);
 
         // save last user login
-        userService.createVisit(user);
+        userService.createVisit(admin);
         return "redirect:/admin/profiles";
     }
 

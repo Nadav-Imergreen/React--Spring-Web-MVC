@@ -3,7 +3,6 @@ package hac.repo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -28,15 +27,24 @@ public class User implements Serializable {
     @Size(min = 3, message = "password should have at least 3 characters")
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Visit> visits = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Visit> visits;
+
+    public void setVisits(Visit visit) {
+        this.visits.add(visit);
+    }
+
+    public List<Visit> getVisits(){
+        return this.visits;
+    }
 
     public User() {}
 
-    public User(String userName, String email, String password) {
+    public User(String userName, String email, String password, List<Visit> visits) {
         this.userName = userName;
         this.email = email;
         this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.visits = visits;
     }
 
     public void setId(long id) {
@@ -58,32 +66,11 @@ public class User implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
     public String getEmail() { return email; }
     public String getPassword() { return password; }
-
-    public List<Visit> getVisits() {
-        return visits;
-    }
-
-    public void setVisits(List<Visit> visits) {
-        this.visits = visits;
-    }
-
-    // Convenience method to add a visit to the user
-    public void addVisit(Visit visit) {
-        visits.add(visit);
-        visit.setUser(this);
-    }
-
-    // Convenience method to remove a visit from the user
-    public void removeVisit(Visit visit) {
-        visits.remove(visit);
-        visit.setUser(null);
-    }
 
     @Override
     public String toString() {

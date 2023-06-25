@@ -3,8 +3,6 @@ package hac.repo;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
-import hac.repo.User;
-
 @Component
 @SessionScope
 public class UserSession {

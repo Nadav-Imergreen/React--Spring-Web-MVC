@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<div th:replace="navbar.html">  </div>
+<div th:replace="~{navbar.html}">  </div>
 <div class="container">
     <h1>User Registration</h1>
     <form id="registrationForm" th:action="@{/user/register}" th:object="${user}" method="post">

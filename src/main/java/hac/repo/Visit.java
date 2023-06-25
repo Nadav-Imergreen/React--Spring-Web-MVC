@@ -18,9 +18,6 @@ public class Visit implements Serializable {
     private String email;
 
     private Date lastVisit;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
     public Visit() {}
 
@@ -41,12 +38,6 @@ public class Visit implements Serializable {
     public void setLastVisit(Date lastVisit) {this.lastVisit = lastVisit;}
     public String getEmail() { return email; }
     public Date getLastVisit() { return lastVisit; }
-
-    public User getUser() {
-        return user;
-    }public void setUser(User user) {
-        this.user = user;
-    }
 
     @Override
     public String toString() {

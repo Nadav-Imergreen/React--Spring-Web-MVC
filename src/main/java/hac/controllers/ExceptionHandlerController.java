@@ -10,14 +10,14 @@ import org.springframework.ui.Model;
 public class ExceptionHandlerController {
 
     @ExceptionHandler(UserNotFoundException.class)
-    public String handleUserNotFoundException(UserNotFoundException ex, Model model) {
+    public String userNotFound(UserNotFoundException ex, Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("email", ex.getMessage());
         return "/user/login";
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    public String handleInvalidPasswordException(InvalidPasswordException ex, Model model) {
+    public String invalidUserPassword(InvalidPasswordException ex, Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("password", ex.getMessage());
         return "/user/login";

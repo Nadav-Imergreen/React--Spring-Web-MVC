@@ -6,6 +6,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,16 +26,23 @@ public class UserService {
 
     @EventListener({ApplicationStartedEvent.class})
     public void registerAdmin() {
-        if (findByEmail(ADMIN_EMAIL) == null)
-            save(new User(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD));
+        List<Visit> visits= new ArrayList<>();
+        userRepository.save(new User(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD, visits));
     }
 
+    @Transactional
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
 
-    public void save(User user) {
-        userRepository.save(new User(user.getUserName(), user.getEmail(), user.getPassword()));
+    @Transactional
+    public void saveNewUser(User user) {
+        userRepository.save(new User(user.getUserName(), user.getEmail(), user.getPassword(), user.getVisits()));
+    }
+
+    @Transactional
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 
     public User findByEmail(String email) {
@@ -46,17 +54,17 @@ public class UserService {
         return visitRepository.findByEmail(email);
     }
 
+    @Transactional
     public void createVisit(User user) {
         Visit visit = new Visit(user.getEmail(), new Date());
 
-        System.out.println(user);
-//        userRepository.save(user);
-//        visit.setUser(user); // Set the user for the visit
+        user.setVisits(visit);
+
         visitRepository.save(visit);
     }
 
-    public User getAdminDetails() {
-        return new User(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD);
+    public String getAdminEmail() {
+        return  ADMIN_EMAIL;
     }
 
     public List<User> findAllUsers() {

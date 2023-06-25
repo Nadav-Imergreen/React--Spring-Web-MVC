@@ -49,7 +49,7 @@ public class UserController {
         }
 
         try {
-            userService.save(user);
+            userService.saveNewUser(user);
         } catch (DataIntegrityViolationException e) { // Handle duplicate userName
             result.rejectValue("email", "error.email", "email already exists");
             model.addAttribute("user", user);
@@ -60,17 +60,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String loginUser(@ModelAttribute("user") User user, BindingResult result, Model model) {
+    public String loginUser(@ModelAttribute("user") User user) {
 
         User existingUser = userService.findByEmail(user.getEmail());
 
-        if (existingUser == null) {
+        if (existingUser == null)
             throw new UserNotFoundException("User not found");
-        }
 
-        if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) {
+        if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword()))
             throw new InvalidPasswordException("Wrong password");
-        }
 
         userSession.setLogin(existingUser);
 
@@ -78,39 +76,6 @@ public class UserController {
 
         return "redirect:/user/profile";
     }
-
-    //    @PostMapping("/login")
-//    public String loginUser(@ModelAttribute("user") User user, BindingResult result, Model model) {
-//
-//        if (result.hasErrors()) {
-//            model.addAttribute("loginError", "error");
-//            return "/user/login";
-//        }
-//
-//        User existingUser = userService.findByEmail(user.getEmail());
-//
-//        // check email
-//        if (existingUser == null) {
-//            result.rejectValue("email", "error.email", "user not found");
-//            model.addAttribute("user", user);
-//            return "/user/login";
-//        }
-//        // check password
-//        if (!BCrypt.checkpw(user.getPassword(), existingUser.getPassword())) {
-//            result.rejectValue("password", "error.password", "wrong password");
-//            model.addAttribute("user", user);
-//            return "/user/login";
-//        }
-//        // successful login
-//        userSession.setLogin(existingUser);
-//
-//        // save last user login
-//        userService.createVisit(user);
-//
-//        return "redirect:/user/profile";
-//    }
-
-
 
     @PostMapping("/changePassword")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
@@ -124,8 +89,7 @@ public class UserController {
         if (BCrypt.checkpw(oldPassword, user.getPassword())){
             model.addAttribute("success", "password change successfully");
             user.setPassword((BCrypt.hashpw(newPassword, BCrypt.gensalt())));  // Update the user's password
-            userService.deleteById(user.getId());
-            userService.save(user);
+            userService.updateUser(user);
         }
         else
             model.addAttribute("error", "wrong password");
