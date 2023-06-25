@@ -7,10 +7,10 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import hac.filters.CustomInterceptor;
 import hac.repo.UserSession;
-/*
-  this is a class for configuring StringMVC
-  here we register our interceptor class and the session listener
-  WebMvcConfigurer allows configuring all the MVC:
+
+/**
+ * Configuration class for configuring Spring MVC.
+ * Enables Web MVC and registers the custom interceptor and session listener.
  */
 @EnableWebMvc
 @Configuration
@@ -20,6 +20,12 @@ public class FiltersConfig implements WebMvcConfigurer {
     @Autowired
     UserSession userSession;
 
+    /**
+     * Registers the custom interceptor with specific URL patterns.
+     * The interceptor is applied to "/user/profile" and "/admin/profiles" URLs.
+     *
+     * @param registry The interceptor registry.
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry){
         // define the URL to intercept with the pattern you want
