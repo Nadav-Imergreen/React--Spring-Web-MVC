@@ -2,7 +2,7 @@
 * Name: Nadav Imergreen
   Email: nadavyi@edu.hac.ac.il
 * Name: Moshe Namdar
-  Email: moshena@edu.hac.ac.il
+  Email: moshenam@edu.hac.ac.il
 
 ## General Description
 The Users Management is a web application that provides functionality for users to register, login, and manage their user details. 
