@@ -28,6 +28,7 @@ Dashboard:
 Admins have the ability to manage user accounts. They can view a list of all registered users and their visits on the web. Admins can also delete user profiles, along with their associated visits.
 
 ### General Information
+Admin can use user login, but user can not use admin lodin.
 The program will create two tables: the User table and the Visit table. These tables are related to each other through a One-to-Many relationship.
 
 The User table will store user information, including their email address, password, and other relevant details. Each user can have multiple visits associated with their account.
