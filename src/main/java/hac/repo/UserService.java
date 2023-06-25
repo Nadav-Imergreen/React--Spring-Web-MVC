@@ -17,15 +17,15 @@ import java.util.List;
 @Transactional
 public class UserService {
 
-    private static final String ADMIN_USERNAME = "admin";
-    private static final String ADMIN_EMAIL = "admin@gmail.com";
-    private static final String ADMIN_PASSWORD = "1234";
-
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private VisitRepository visitRepository;
+
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_EMAIL = "admin@gmail.com";
+    private static final String ADMIN_PASSWORD = "1234";
 
     /**
      * Registers the admin user in the database when the application starts.
@@ -102,15 +102,6 @@ public class UserService {
     }
 
     /**
-     * Retrieves the email address of the admin user.
-     *
-     * @return the email address of the admin user
-     */
-    public String getAdminEmail() {
-        return ADMIN_EMAIL;
-    }
-
-    /**
      * Retrieves a list of all registered users from the database.
      *
      * @return a list of all users
@@ -126,5 +117,9 @@ public class UserService {
      */
     public List<Visit> findAllVisits() {
         return visitRepository.findAll();
+    }
+
+    public String getAdminEmail() {
+        return ADMIN_EMAIL;
     }
 }
