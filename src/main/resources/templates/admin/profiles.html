@@ -8,6 +8,49 @@
 <body>
 <div th:replace="~{navbar.html}"></div>
 <div class="container">
+    <div class="row mt-5">
+        <div class="col-md-5">
+            <h2>Search User</h2>
+            <form th:action="@{/admin/profiles/search}" method="get">
+                <div class="form-group">
+                    <label for="search">Search username(multiple results possible) or email(unique):</label>
+                    <input type="text" class="form-control" id="search" name="search" placeholder="Enter username or email">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h2>Search Results</h2>
+            <div th:if="${results}">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="result : ${results}">
+                        <td th:text="${result.id}"></td>
+                        <td th:text="${result.userName}"></td>
+                        <td th:text="${result.email}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${message}">
+                <p th:text="${message}"></p>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <form th:action="@{/admin/logout}" method="post">
+                <button type="submit" class="btn btn-primary">Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
     <div class="row">
         <div class="col-md-6">
             <h2>Users Profile</h2>
@@ -27,9 +70,11 @@
                     <td th:text="${user.userName}"></td>
                     <td th:text="${user.email}"></td>
                     <td>
-                        <form th:action="@{/admin/profiles/delete/{id}(id=${user.id})}" method="post">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
+                        <div th:if="${user.id != 1}">
+                            <form th:action="@{/admin/profiles/delete/{id}(id=${user.id})}" method="post">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -54,11 +99,6 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
-        <div class="col-md-1">
-        <form th:action="@{/admin/logout}" method="post">
-            <button type="submit" class="btn btn-primary">Logout</button>
-        </form>
         </div>
     </div>
 </div>

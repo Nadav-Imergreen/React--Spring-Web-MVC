@@ -41,11 +41,9 @@ public class AdminController {
      */
     @GetMapping("/profiles")
     public String showProfiles(Model model) {
-        List<User> users = userService.findAllUsers();
-        List<Visit> visits = userService.findAllVisits();
 
-        model.addAttribute("users", users);
-        model.addAttribute("visits", visits);
+        model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("visits", userService.findAllVisits());
 
         return "admin/profiles";
     }
@@ -84,9 +82,8 @@ public class AdminController {
      */
     @PostMapping("/profiles/delete/{id}")
     public String deleteProfile(@PathVariable("id") Long id) {
-        if (id != 1) { // Delete user if it's not the admin
+        if (id != 1)  // Delete user if it's not the admin
             userService.deleteById(id);
-        }
 
         return "redirect:/admin/profiles";
     }
@@ -99,5 +96,31 @@ public class AdminController {
     public String logout() {
         userSession.setLogout(userSession.getUser());
         return "redirect:/";
+    }
+
+
+    /**
+     * Handles the search for user profiles.
+     *
+     * @param query the search query (username or email)
+     * @param model the model object to add attributes
+     * @return the view name for displaying user profiles
+     */
+    @GetMapping("/profiles/search")
+    public String search(@RequestParam("search")String query, Model model) {
+        // Find user profiles matching the search query
+        List<User> results = userService.findUser(query, query);
+
+        // Add attributes to the model based on the search results
+        if (results.isEmpty())
+            model.addAttribute("message", "No results found for the search query");
+        else
+            model.addAttribute("results", results);
+
+        // Add additional attributes for displaying all user profiles and visits
+        model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("visits", userService.findAllVisits());
+
+        return "admin/profiles";
     }
 }

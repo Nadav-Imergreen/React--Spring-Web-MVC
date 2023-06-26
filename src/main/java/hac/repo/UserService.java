@@ -122,4 +122,8 @@ public class UserService {
     public String getAdminEmail() {
         return ADMIN_EMAIL;
     }
+
+    public List<User> findUser(String username, String email) {
+        return userRepository.findByUserNameOrEmail(username, email);
+    }
 }
