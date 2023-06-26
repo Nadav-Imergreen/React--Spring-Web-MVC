@@ -1,4 +1,5 @@
 package hac.filters;
+
 import hac.repo.UserSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -6,10 +7,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
-public class CustomInterceptor implements HandlerInterceptor {
+public class LoginInterceptor implements HandlerInterceptor {
     private final UserSession userSession;
 
-    public CustomInterceptor(UserSession userSession) {
+    public LoginInterceptor(UserSession userSession) {
         this.userSession = userSession;
     }
 
@@ -27,13 +28,11 @@ public class CustomInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        if (!userSession.isAuthenticated()) {
-            response.sendRedirect("/");  // prevent access to non-authorized pages
+        if (userSession.isAuthenticated() && (userSession.getUser().getId() == 1)) {
+            response.sendRedirect("/admin/profiles");  // prevent access to non-authorized pages
             return false;
-        }
-
-        if (!(userSession.getUser().getId() == 1) && request.getRequestURI().startsWith("/admin")){
-            response.sendRedirect("/");  // prevent access to non-authorized pages
+        } else if (userSession.isAuthenticated()) {
+            response.sendRedirect("/user/profile");  // prevent access to non-authorized pages
             return false;
         }
 
@@ -41,3 +40,8 @@ public class CustomInterceptor implements HandlerInterceptor {
         return true;
     }
 }
+
+
+
+
+

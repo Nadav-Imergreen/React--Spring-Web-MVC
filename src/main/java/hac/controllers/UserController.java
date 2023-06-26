@@ -164,4 +164,14 @@ public class UserController {
 
         model.addAttribute("user", user);
     }
+
+    /**
+     * logout handler
+     * @return redirect to the user home page
+     */
+    @PostMapping("/logout")
+    public String logout() {
+        userSession.setLogout(userSession.getUser());
+        return "redirect:/";
+    }
 }

@@ -1,5 +1,6 @@
 package hac;
 
+import hac.filters.LoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -31,5 +32,7 @@ public class FiltersConfig implements WebMvcConfigurer {
         // define the URL to intercept with the pattern you want
         registry.addInterceptor(new CustomInterceptor(userSession)).addPathPatterns("/user/profile");
         registry.addInterceptor(new CustomInterceptor(userSession)).addPathPatterns("/admin/profiles");
+        registry.addInterceptor(new LoginInterceptor(userSession)).addPathPatterns("/user/login");
+        registry.addInterceptor(new LoginInterceptor(userSession)).addPathPatterns("/admin/login");
     }
 }

@@ -27,7 +27,12 @@ public class UserSession {
      */
     public void setLogin(User user) {
         this.user = user;
-        isAuthenticated = true;
+        this.isAuthenticated = true;
+    }
+
+    public void setLogout(User user) {
+        this.user = null;
+        this.isAuthenticated = false;
     }
 
     /**
